@@ -12,14 +12,14 @@ _TIME=$(date +%Y%m%d%H%M%S)
 
 # Optional way of handling $GOROOT
 # if [ -z "$GOROOT" ]; then
-#     echo "Please set your $GOROOT or run $HOME/alastria/bootstrap.sh"
+#     echo "Please set your $GOROOT or run $HOME/blockcheq/bootstrap.sh"
 #     exit 1
 # fi
 
 if [[ -z "$GOROOT" ]]; then
-    echo "[*] Trying default $GOROOT. If the script fails please run $HOME/alastria-node/bootstrap.sh or configure GOROOT correctly"
+    echo "[*] Trying default $GOROOT. If the script fails please run $HOME/blockcheq-node/bootstrap.sh or configure GOROOT correctly"
     export GOROOT=/usr/local/go
-    export GOPATH=$HOME/alastria/workspace
+    export GOPATH=$HOME/blockcheq/workspace
     export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 
     mkdir -p "$GOPATH"/bin
@@ -49,10 +49,10 @@ if ( [ "build" == "$1" ]); then
 
     echo "[*] Installing glide"
     curl https://glide.sh/get | sh
-    go get github.com/alastria/monitor
-    cd "$GOPATH"/src/github.com/alastria
+    go get github.com/blockcheq/monitor
+    cd "$GOPATH"/src/github.com/blockcheq
     
-    cd "$GOPATH"/src/github.com/alastria/monitor
+    cd "$GOPATH"/src/github.com/blockcheq/monitor
     LATEST_TAG=`git describe --tags \`git rev-list --tags --max-count=1\``
     echo "LATESTTAG: $LATEST_TAG"       
     git checkout tags/$LATEST_TAG
@@ -70,19 +70,19 @@ if ( [ "build" == "$1" ]); then
 fi
 
 if ( [ "start" == "$1" ]); then 
-    cd $GOPATH/src/github.com/alastria/monitor
+    cd $GOPATH/src/github.com/blockcheq/monitor
     echo "[*] Starting monitor"
-    #nohup $GOPATH/src/github.com/alastria/monitor/monitor >> $HOME/alastria/logs/monitor_"${_TIME}".log &
-    nohup bee run -vendor=true -downdoc=true -gendoc=true >> $HOME/alastria/logs/monitor_"${_TIME}".log &
+    #nohup $GOPATH/src/github.com/blockcheq/monitor/monitor >> $HOME/blockcheq/logs/monitor_"${_TIME}".log &
+    nohup bee run -vendor=true -downdoc=true -gendoc=true >> $HOME/blockcheq/logs/monitor_"${_TIME}".log &
 fi
 
 if ( [ "latest" == "$1" ]); then 
-    cd $GOPATH/src/github.com/alastria/monitor
+    cd $GOPATH/src/github.com/blockcheq/monitor
     git describe --tags `git rev-list --tags --max-count=1` # gets tags across all branches, not just the current branch
 fi
 
 if ( [ "version" == "$1" ]); then 
-    cd $GOPATH/src/github.com/alastria/monitor
+    cd $GOPATH/src/github.com/blockcheq/monitor
     git tag
 fi
 

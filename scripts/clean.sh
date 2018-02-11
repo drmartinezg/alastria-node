@@ -2,14 +2,14 @@
 # Prepare the node for a clean restart
 
 echo "Preparing the node for a clean restart ..."
-rm -Rf ~/alastria/logs/quorum*
-rm -Rf ~/alastria/data/geth/chainData
-rm -Rf ~/alastria/data/geth/nodes
-rm ~/alastria/data/geth/LOCK
-rm ~/alastria/data/geth/transactions.rpl
-rm ~/alastria/data/geth.ipc
-rm -Rf ~/alastria/data/quorum-raft-state
-rm -Rf ~/alastria/data/raft-snap
-rm -Rf ~/alastria/data/raft-wal
-rm -Rf ~/alastria/data/constellation/data
-rm ~/alastria/data/constellation/constellation.ipc
+rm -Rf ~/blockcheq/logs/quorum*
+rm -Rf ~/blockcheq/data/geth/chainData
+rm -Rf ~/blockcheq/data/geth/nodes
+rm ~/blockcheq/data/geth/LOCK
+rm ~/blockcheq/data/geth/transactions.rpl
+rm ~/blockcheq/data/geth.ipc
+rm -Rf ~/blockcheq/data/quorum-raft-state
+rm -Rf ~/blockcheq/data/raft-snap
+rm -Rf ~/blockcheq/data/raft-wal
+rm -Rf ~/blockcheq/data/constellation/data
+rm ~/blockcheq/data/constellation/constellation.ipc

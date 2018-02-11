@@ -16,7 +16,7 @@ if [ $OS = "centos" ] || [ $OS = "rhel" ];then
     sudo yum -y install wget
     wget -q "https://storage.googleapis.com/golang/${GOREL}"
     tar -xvzf "${GOREL}"
-    mv go /usr/local/go
+    sudo mv go /usr/local/go
     sudo rm "${GOREL}"
   else
     V1=$(go version | grep -oP '\d+(?:\.\d+)+')
@@ -184,12 +184,12 @@ fi
 
 # Manage GOROOT variable
 if [[ -z "$GOROOT" ]]; then
-    echo "[*] Trying default $GOROOT. If the script fails please run $HOME/alastria-node/bootstrap.sh or configure GOROOT correctly"
+    echo "[*] Trying default $GOROOT. If the script fails please run $HOME/blockcheq-node/bootstrap.sh or configure GOROOT correctly"
     echo 'export GOROOT=/usr/local/go' >> $HOME/.bashrc
-    echo 'export GOPATH=$HOME/alastria/workspace' >> $HOME/.bashrc
+    echo 'export GOPATH=$HOME/blockcheq/workspace' >> $HOME/.bashrc
     echo 'export PATH=$GOROOT/bin:$GOPATH/bin:$PATH' >> $HOME/.bashrc
     export GOROOT=/usr/local/go
-    export GOPATH=$HOME/alastria/workspace
+    export GOPATH=$HOME/blockcheq/workspace
     export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 
     echo "[*] GOROOT = $GOROOT, GOPATH = $GOPATH"
@@ -197,10 +197,12 @@ if [[ -z "$GOROOT" ]]; then
     mkdir -p "$GOPATH"/bin
     mkdir -p "$GOPATH"/src
 fi
+sudo chown -R $USER ~/blockcheq/
+
 
 #INSTALACION DEL MONITOR
-~/alastria-node/scripts/monitor.sh build
-~/alastria-node/scripts/monitor.sh start 
+#~/blockcheq-node/scripts/monitor.sh build
+#~/blockcheq-node/scripts/monitor.sh start 
 
 
 set +e

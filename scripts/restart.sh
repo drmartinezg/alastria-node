@@ -12,7 +12,7 @@ CONSTELLATION_NODES=$(cat ../data/constellation-nodes.json)
 STATIC_NODES=$(cat ../data/static-nodes.json)
 CURRENT_HOST_IP="$1"
 PWD="$HOME"
-mapfile -t NODE_TYPE <~/alastria/data/NODE_TYPE
+mapfile -t NODE_TYPE <~/blockcheq/data/NODE_TYPE
 
 if ( [ "auto" == "$1" ]); then 
     echo "Autodiscovering public host IP ..."
@@ -24,7 +24,7 @@ echo "Backing up current node keys ..."
 
 #Backup directory tree
 echo "Saving enode ID ..."
-cp ~/alastria/data/geth/nodekey /tmp/nodekey
+cp ~/blockcheq/data/geth/nodekey /tmp/nodekey
 
 
 generate_conf() {
@@ -43,7 +43,7 @@ url = "http://$NODE_IP:$CONSTELLATION_PORT/"
 port = $CONSTELLATION_PORT
 
 # Socket file to use for the private API / IPC
-socket = "$PWD/alastria/data/constellation/constellation.ipc"
+socket = "$PWD/blockcheq/data/constellation/constellation.ipc"
 
 # Initial (not necessarily complete) list of other nodes in the network.
 # Constellation will automatically connect to other nodes not in this list
@@ -52,17 +52,17 @@ socket = "$PWD/alastria/data/constellation/constellation.ipc"
 othernodes = $OTHER_NODES
 
 # The set of public keys this node will host
-publickeys = ["$PWD/alastria/data/constellation/keystore/node.pub"]
+publickeys = ["$PWD/blockcheq/data/constellation/keystore/node.pub"]
 
 # The corresponding set of private keys
-privatekeys = ["$PWD/alastria/data/constellation/keystore/node.key"]
+privatekeys = ["$PWD/blockcheq/data/constellation/keystore/node.key"]
 
 # Optional file containing the passwords to unlock the given privatekeys
 # (one password per line -- add an empty line if one key isn't locked.)
-passwords = "$PWD/alastria/data/passwords.txt"
+passwords = "$PWD/blockcheq/data/passwords.txt"
 
 # Where to store payloads and related information
-storage = "$PWD/alastria/data/constellation/data"
+storage = "$PWD/blockcheq/data/constellation/data"
 
 # Verbosity level (each level includes all prior levels)
 #   - 0: Only fatal errors
@@ -75,20 +75,20 @@ EOF
 }
 
 echo "[*] Updating permissioned nodes."
-cp ~/alastria-node/data/static-nodes.json ~/alastria/data/static-nodes.json
+cp ~/blockcheq-node/data/static-nodes.json ~/blockcheq/data/static-nodes.json
 if [[ "$NODE_TYPE" == "general" ]]; then
-    generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
-    cp ~/alastria-node/data/permissioned-nodes_general.json ~/alastria/data/permissioned-nodes.json
+    generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/blockcheq/data/constellation/constellation.conf
+    cp ~/blockcheq-node/data/permissioned-nodes_general.json ~/blockcheq/data/permissioned-nodes.json
 else
-    cp ~/alastria-node/data/permissioned-nodes_validator.json ~/alastria/data/permissioned-nodes.json
+    cp ~/blockcheq-node/data/permissioned-nodes_validator.json ~/blockcheq/data/permissioned-nodes.json
 fi
 
-cp /tmp/nodekey ~/alastria/data/geth/
+cp /tmp/nodekey ~/blockcheq/data/geth/
 
 if [[ "$CURRENT_HOST_IP" != "onlyUpdate" ]]; then
-    ~/alastria-node/scripts/stop.sh
+    ~/blockcheq-node/scripts/stop.sh
     sleep 6
-    ~/alastria-node/scripts/start.sh
+    ~/blockcheq-node/scripts/start.sh
 fi
 
 echo "[*] Restart done succesfully"

@@ -5,7 +5,7 @@ set -e
 MESSAGE='Usage: init <mode> <node-type> <node-name>
     mode: CURRENT_HOST_IP | auto | backup
     node-type: validator | general
-    node-name: NODE_NAME (example: Alastria)'
+    node-name: NODE_NAME (example: Blockcheq)'
 
 if ( [ $# -ne 3 ] ); then
     echo "$MESSAGE"
@@ -33,16 +33,16 @@ fi
 if ( [ "backup" == "$1" ]); then 
     echo "Backing up current node keys ..."
     #Backup directory tree
-    mkdir ~/alastria-keysBackup
-    mkdir ~/alastria-keysBackup/data
-    mkdir ~/alastria-keysBackup/data/geth
-    mkdir ~/alastria-keysBackup/data/constellation
+    mkdir ~/blockcheq-keysBackup
+    mkdir ~/blockcheq-keysBackup/data
+    mkdir ~/blockcheq-keysBackup/data/geth
+    mkdir ~/blockcheq-keysBackup/data/constellation
     echo "Saving constellation keys ..."
-    cp -r ~/alastria/data/constellation/keystore ~/alastria-keysBackup/data/constellation/
+    cp -r ~/blockcheq/data/constellation/keystore ~/blockcheq-keysBackup/data/constellation/
     echo "Saving node keys ..."
-    cp -r ~/alastria/data/keystore ~/alastria-keysBackup/data
+    cp -r ~/blockcheq/data/keystore ~/blockcheq-keysBackup/data
     echo "Saving enode ID ..."
-    cp ~/alastria/data/geth/nodekey ~/alastria-keysBackup/data/geth/nodekey
+    cp ~/blockcheq/data/geth/nodekey ~/blockcheq-keysBackup/data/geth/nodekey
 fi
 
 PWD="$(pwd)"
@@ -59,7 +59,7 @@ update_constellation_nodes() {
 ]"
     CONSTELLATION_NODES=${CONSTELLATION_NODES::-2}
     CONSTELLATION_NODES="$CONSTELLATION_NODES$URL"
-    echo "$CONSTELLATION_NODES" > ~/alastria-node/data/constellation-nodes.json
+    echo "$CONSTELLATION_NODES" > ~/blockcheq-node/data/constellation-nodes.json
 }
 
 update_nodes_list() {
@@ -71,16 +71,16 @@ update_nodes_list() {
 ]"
     PERMISSIONED_NODES_VALIDATOR=${PERMISSIONED_NODES_VALIDATOR::-2}
     PERMISSIONED_NODES_VALIDATOR="$PERMISSIONED_NODES_VALIDATOR$ENODE"
-    echo "$PERMISSIONED_NODES_VALIDATOR" > ~/alastria-node/data/permissioned-nodes_validator.json
+    echo "$PERMISSIONED_NODES_VALIDATOR" > ~/blockcheq-node/data/permissioned-nodes_validator.json
 
     if ( [ "validator" == "$NODE_TYPE" ]); then 
         PERMISSIONED_NODES_GENERAL=${PERMISSIONED_NODES_GENERAL::-2}
         PERMISSIONED_NODES_GENERAL="$PERMISSIONED_NODES_GENERAL$ENODE"
-        echo "$PERMISSIONED_NODES_GENERAL" > ~/alastria-node/data/permissioned-nodes_general.json
+        echo "$PERMISSIONED_NODES_GENERAL" > ~/blockcheq-node/data/permissioned-nodes_general.json
     fi
 
     echo "Updating static-nodes..."
-    cp ~/alastria-node/data/permissioned-nodes_general.json ~/alastria-node/data/static-nodes.json
+    cp ~/blockcheq-node/data/permissioned-nodes_general.json ~/blockcheq-node/data/static-nodes.json
 
 }
 
@@ -101,7 +101,7 @@ url = "http://$NODE_IP:$CONSTELLATION_PORT/"
 port = $CONSTELLATION_PORT
 
 # Socket file to use for the private API / IPC
-socket = "$PWD/alastria/data/constellation/constellation.ipc"
+socket = "$PWD/blockcheq/data/constellation/constellation.ipc"
 
 # Initial (not necessarily complete) list of other nodes in the network.
 # Constellation will automatically connect to other nodes not in this list
@@ -110,17 +110,17 @@ socket = "$PWD/alastria/data/constellation/constellation.ipc"
 othernodes = $OTHER_NODES
 
 # The set of public keys this node will host
-publickeys = ["$PWD/alastria/data/constellation/keystore/node.pub"]
+publickeys = ["$PWD/blockcheq/data/constellation/keystore/node.pub"]
 
 # The corresponding set of private keys
-privatekeys = ["$PWD/alastria/data/constellation/keystore/node.key"]
+privatekeys = ["$PWD/blockcheq/data/constellation/keystore/node.key"]
 
 # Optional file containing the passwords to unlock the given privatekeys
 # (one password per line -- add an empty line if one key isn't locked.)
-passwords = "$PWD/alastria/data/passwords.txt"
+passwords = "$PWD/blockcheq/data/passwords.txt"
 
 # Where to store payloads and related information
-storage = "$PWD/alastria/data/constellation/data"
+storage = "$PWD/blockcheq/data/constellation/data"
 
 # Verbosity level (each level includes all prior levels)
 #   - 0: Only fatal errors
@@ -133,30 +133,30 @@ EOF
 }
 
 echo "[*] Cleaning up temporary data directories."
-rm -rf ~/alastria/data
-rm -rf ~/alastria/logs/quorum*
-mkdir -p ~/alastria/data/{keystore,geth,constellation}
-mkdir -p ~/alastria/data/constellation/{data,keystore}
-mkdir -p ~/alastria/logs
+rm -rf ~/blockcheq/data
+rm -rf ~/blockcheq/logs/quorum*
+mkdir -p ~/blockcheq/data/{keystore,geth,constellation}
+mkdir -p ~/blockcheq/data/constellation/{data,keystore}
+mkdir -p ~/blockcheq/logs
 
-echo "$NODE_NAME" > ~/alastria/data/IDENTITY
-echo "$NODE_TYPE" > ~/alastria/data/NODE_TYPE
+echo "$NODE_NAME" > ~/blockcheq/data/IDENTITY
+echo "$NODE_TYPE" > ~/blockcheq/data/NODE_TYPE
 
 # Creamos el fichero de passwords con la contraseña de las cuentas
-echo "Passw0rd" > ~/alastria/data/passwords.txt
+echo "Passw0rd" > ~/blockcheq/data/passwords.txt
 
 echo "[*] Initializing quorum"
-geth --datadir ~/alastria/data init ~/alastria-node/data/genesis.json
-cd ~/alastria/data/geth
+geth --datadir ~/blockcheq/data init ~/blockcheq-node/data/genesis.json
+cd ~/blockcheq/data/geth
 bootnode -genkey nodekey
 ENODE_KEY=$(bootnode -nodekey nodekey -writeaddress)
 
 if ( [ "backup" == "$1" ]); then
-    ENODE_KEY=$(bootnode -nodekey ~/alastria-keysBackup/data/geth/nodekey -writeaddress)
+    ENODE_KEY=$(bootnode -nodekey ~/blockcheq-keysBackup/data/geth/nodekey -writeaddress)
 fi
 
 if ( [ "dockerfile" == "$1" ]); then
-    ENODE_KEY=$(bootnode -nodekey ~/alastria-node/data/keys/data/geth/nodekey -writeaddress)
+    ENODE_KEY=$(bootnode -nodekey ~/blockcheq-node/data/keys/data/geth/nodekey -writeaddress)
 fi
 
 echo "ENODE -> 'enode://${ENODE_KEY}@${CURRENT_HOST_IP}:21000?discport=0'"
@@ -164,16 +164,16 @@ if ( [ "backup" != "$1" ]); then
     update_nodes_list "enode://${ENODE_KEY}@${CURRENT_HOST_IP}:21000?discport=0"
 fi
 cd ~
-if [[ "$CURRENT_HOST_IP" == "52.56.69.220" ]]; then
-    cp ~/alastria-node/data/static-nodes.json ~/alastria/data/static-nodes.json
-    cp ~/alastria-node/data/static-nodes.json ~/alastria/data/permissioned-nodes.json
+if [[ "$CURRENT_HOST_IP" == "192.168.1.43" ]]; then
+    cp ~/blockcheq-node/data/static-nodes.json ~/blockcheq/data/static-nodes.json
+    cp ~/blockcheq-node/data/static-nodes.json ~/blockcheq/data/permissioned-nodes.json
 else 
     if [[ "$NODE_TYPE" == "general" ]]; then
-        cp ~/alastria-node/data/permissioned-nodes_general.json ~/alastria/data/permissioned-nodes.json
-        cp ~/alastria-node/data/permissioned-nodes_general.json ~/alastria/data/static-nodes.json
+        cp ~/blockcheq-node/data/permissioned-nodes_general.json ~/blockcheq/data/permissioned-nodes.json
+        cp ~/blockcheq-node/data/permissioned-nodes_general.json ~/blockcheq/data/static-nodes.json
     else 
-        cp ~/alastria-node/data/permissioned-nodes_validator.json ~/alastria/data/permissioned-nodes.json
-        cp ~/alastria-node/data/permissioned-nodes_validator.json ~/alastria/data/static-nodes.json
+        cp ~/blockcheq-node/data/permissioned-nodes_validator.json ~/blockcheq/data/permissioned-nodes.json
+        cp ~/blockcheq-node/data/permissioned-nodes_validator.json ~/blockcheq/data/static-nodes.json
     fi
 fi
 
@@ -182,16 +182,16 @@ if ( [ "general" == "$NODE_TYPE" ]); then
     # echo "     Por favor, introduzca como contraseña 'Passw0rd'."
     echo  "     Definida contraseña por defecto para cuenta principal como: $ACCOUNT_PASSWORD."
     echo $ACCOUNT_PASSWORD > ./account_pass
-    geth --datadir ~/alastria/data --password ./account_pass account new
+    geth --datadir ~/blockcheq/data --password ./account_pass account new
     rm ./account_pass
 
     echo "[*] Initializing Constellation node."
     if ( [ "backup" != "$1" ]); then
         update_constellation_nodes "${CURRENT_HOST_IP}" "9000"
-        generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
+        generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/blockcheq/data/constellation/constellation.conf
     fi
-        cd ~/alastria/data/constellation/keystore
-        cat ~/alastria/data/passwords.txt | constellation-node --generatekeys=node
+        cd ~/blockcheq/data/constellation/keystore
+        cat ~/blockcheq/data/passwords.txt | constellation-node --generatekeys=node
     echo "______"
     cd ~
 fi
@@ -199,38 +199,38 @@ fi
 
 if ( [ "backup" == "$1" ]); then 
     echo "Recovering keys from backup ..."
-    rm -rf ~/alastria/data/constellation/keystore
-    rm -rf ~/alastria/data/keystore
-    rm ~/alastria/data/geth/nodekey
+    rm -rf ~/blockcheq/data/constellation/keystore
+    rm -rf ~/blockcheq/data/keystore
+    rm ~/blockcheq/data/geth/nodekey
 
     echo "Recovering constellation keys ..."
-    cp -rf ~/alastria-keysBackup/data/constellation/keystore ~/alastria/data/constellation/
+    cp -rf ~/blockcheq-keysBackup/data/constellation/keystore ~/blockcheq/data/constellation/
     echo "Recovering node keys ..."
-    cp -rf ~/alastria-keysBackup/data/keystore ~/alastria/data/ 
+    cp -rf ~/blockcheq-keysBackup/data/keystore ~/blockcheq/data/ 
     echo "Recovering enode ID ..."
-    cp ~/alastria-keysBackup/data/geth/nodekey ~/alastria/data/geth/nodekey
+    cp ~/blockcheq-keysBackup/data/geth/nodekey ~/blockcheq/data/geth/nodekey
     echo "Cleaning backup files ..."
-    rm -rf ~/alastria-keysBackup
+    rm -rf ~/blockcheq-keysBackup
 fi
 
 if ( [ "dockerfile" == "$1" ]); then 
     echo "Recovering keys saved in the repository ..."
-    rm -rf ~/alastria/data/constellation/keystore
-    rm -rf ~/alastria/data/keystore
-    rm ~/alastria/data/geth/nodekey
+    rm -rf ~/blockcheq/data/constellation/keystore
+    rm -rf ~/blockcheq/data/keystore
+    rm ~/blockcheq/data/geth/nodekey
 
     echo "Recovering constellation keys ..."
-    cp -rf ~/alastria-node/data/keys/data/constellation/keystore ~/alastria/data/constellation/
+    cp -rf ~/blockcheq-node/data/keys/data/constellation/keystore ~/blockcheq/data/constellation/
     echo "Recovering node keys ..."
-    cp -rf ~/alastria-node/data/keys/data/keystore ~/alastria/data/ 
+    cp -rf ~/blockcheq-node/data/keys/data/keystore ~/blockcheq/data/ 
     echo "Recovering enode ID ..."
-    cp ~/alastria-node/data/keys/data/geth/nodekey ~/alastria/data/geth/nodekey
+    cp ~/blockcheq-node/data/keys/data/geth/nodekey ~/blockcheq/data/geth/nodekey
 
 fi
 
 echo "[*] Initialization was completed successfully."
 echo " "
-echo "      Update DIRECTORY_REGULAR.md or DIRECTORY_VALIDATOR.md from alastria-node repository and send a Pull Request."
+echo "      Update DIRECTORY_REGULAR.md or DIRECTORY_VALIDATOR.md from blockcheq-node repository and send a Pull Request."
 echo "      Don't forget the .json files in data folder!."
 echo " "
 
